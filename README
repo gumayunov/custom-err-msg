@@ -19,19 +19,16 @@ is begin the message with a '^' character. Example:
 Detail
 ------
 
-Redefines the ActiveRecord::Errors::full_messages method:
+Redefines methods:
+ 
+ ActiveRecord::Errors::full_messages
+ ActiveRecord::Errors::on
+
  Returns all the full error messages in an array. 'Base' messages are handled as usual.
  Non-base messages are prefixed with the attribute name as usual UNLESS they begin with '^'
  in which case the attribute name is omitted.
 
+Source
+------
 
-Download
---------
-
-http://rubyforge.org/projects/custom-error-message/
-
-
-Bugs & feedback
----------------
-
-Please send bug reports, patches and feedback to David Easley at easleydp@gmail.com
+http://github.com/gumayunov/custom-err-msg/tree
