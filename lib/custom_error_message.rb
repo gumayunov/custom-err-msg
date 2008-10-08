@@ -6,43 +6,38 @@ module ActiveRecord
     #  Non-base messages are prefixed with the attribute name as usual UNLESS they begin with '^'
     #  in which case the attribute name is omitted.
     #  E.g. validates_acceptance_of :accepted_terms, :message => '^Please accept the terms of service'
-    def full_messages
-      full_messages = []
-
-      @errors.each_key do |attr|
-        if errors = process_error_messages(attr)
-          full_messages.push *errors
-        end
-      end
-
-      return full_messages
-    end
-
-    def on(attribute)
-      errors = process_error_messages(attribute) or return nil
-      errors.size == 1 ? errors.first : errors
-    end
-
-    private 
-
-    def process_error_messages(attr)
-      errors = @errors[attr.to_s]
-      return nil if errors.nil?
-
-      result = []
-      errors.each do |msg|
-        next if msg.nil?
-
-        if attr == "base"
-          result << msg
-        elsif msg =~ /^\^/
-          result << msg[1..-1]
+    private
+    def full_messages_with_tilde
+      process_procs
+      full_messages = full_messages_without_tilde
+      full_messages.map do |message|
+        if is_a_string_that_starts_with_humanized_column_followed_by_circumflex? message
+          message.gsub(/^.+\^/, '')
+        elsif message.respond_to? :to_proc
+          message.to_proc.call(@base)
         else
-          result << @base.class.human_attribute_name(attr) + " " + msg
+          message
         end
       end
-      result 
+    end
+    alias_method_chain :full_messages, :tilde
+
+    def process_procs
+      @errors.each_pair do |field, messages|
+        only_string_messages = messages.map do |message|
+          if message.respond_to? :to_proc
+            "^#{message.to_proc.call(@base)}"
+          else
+            message
+          end
+        end
+
+        @errors[field] = only_string_messages
+      end
     end
 
+    def is_a_string_that_starts_with_humanized_column_followed_by_circumflex?(message)
+      message.respond_to?(:to_str) && @errors.keys.any?{|column| message.match(/^#{column.to_s.humanize} \^/)}
+    end
   end
 end
