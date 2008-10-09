@@ -11,10 +11,8 @@ module ActiveRecord
       process_procs
       full_messages = full_messages_without_tilde
       full_messages.map do |message|
-        if is_a_string_that_starts_with_humanized_column_followed_by_circumflex? message
+        if starts_with_humanized_column_followed_by_circumflex? message
           message.gsub(/^.+\^/, '')
-        elsif message.respond_to? :to_proc
-          message.to_proc.call(@base)
         else
           message
         end
@@ -36,8 +34,8 @@ module ActiveRecord
       end
     end
 
-    def is_a_string_that_starts_with_humanized_column_followed_by_circumflex?(message)
-      message.respond_to?(:to_str) && @errors.keys.any?{|column| message.match(/^#{column.to_s.humanize} \^/)}
+    def starts_with_humanized_column_followed_by_circumflex?(message)
+      @errors.keys.any?{|column| message.match(/^#{column.to_s.humanize} \^/)}
     end
   end
 end

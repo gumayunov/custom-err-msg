@@ -2,7 +2,6 @@ require File.dirname(__FILE__) + '/spec_helper'
 require 'active_record'
 require 'custom_error_message'
 require 'action_controller'
-require 'mocha'
 
 include ActionView::Helpers::ActiveRecordHelper
 include ActionView::Helpers::TextHelper
@@ -38,13 +37,13 @@ def create_ar_object_with_columns(*cols)
 end
 
 describe 'custom_err_msg with a declarative validation' do
-  it 'without tilde should not change behaviour' do
+  it 'without circumflex should not change behaviour' do
     @rec = create_ar_object_that_validates_presence_of :email, 'is not present'
     @rec.valid?
     error_messages_for(:object => @rec).should match(/Email is not present/)
   end
 
-  it 'with tilde in the beginning should show only the message' do
+  it 'with circumflex in the beginning should show only the message' do
     @rec = create_ar_object_that_validates_presence_of :email, '^The email is missing'
     @rec.valid?
     error_messages_for(:object => @rec).should match(/>The email is missing/)
@@ -56,7 +55,7 @@ describe 'custom_err_msg with a declarative validation' do
     error_messages_for(:object => @rec).should match(/>You forgot the email/)
   end
 
-  it 'with tilde not in the beginning should leave original behaviour' do
+  it 'with circumflex not in the beginning should leave original behaviour' do
     @rec = create_ar_object_that_validates_presence_of :email, 'is not ^ present'
     @rec.valid?
     error_messages_for(:object => @rec).should match(/Email is not \^ present/)
@@ -69,22 +68,22 @@ describe 'custom_err_msg using the errors.add method' do
     @rec = create_ar_object_with_columns :name
   end
  
-  it 'query of error without tilde should not change behaviour' do
+  it 'query of error without circumflex should not change behaviour' do
     @rec.errors.add(:name, 'is too long')
     @rec.errors.on(:name).should == 'is too long'
   end
 
-  it 'added error without tilde should not change behaviour' do
+  it 'added error without circumflex should not change behaviour' do
     @rec.errors.add(:name, 'is too long')
     error_messages_for(:object => @rec).should match(/Name is too long/)
   end
 
-  it 'query of error with tilde should show the message' do
+  it 'query of error with circumflex should show the message' do
     @rec.errors.add(:name, '^You forgot the name')
     @rec.errors.on(:name).should == '^You forgot the name'
   end
 
-  it 'added error with tilde should only show the message' do
+  it 'added error with circumflex should only show the message' do
     @rec.errors.add(:name, '^You forgot the name')
     error_messages_for(:object => @rec).should match(/>You forgot the name/)
   end
@@ -95,7 +94,7 @@ describe 'custom_err_msg using the errors.add method' do
     error_messages_for(:object => @rec).should match(/>Bobby is an ugly name/)
   end
 
-  it 'should handle correctly a field with one normal, one tilde based and one proc based error message' do
+  it 'should handle correctly a field with one normal, one circumflex based and one proc based error message' do
     @rec.name = 'Bobby'
     @rec.errors.add(:name, '^You forgot the name')
     @rec.errors.add(:name, 'is not pretty')

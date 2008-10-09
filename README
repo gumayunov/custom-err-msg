@@ -15,14 +15,16 @@ is begin the message with a '^' character. Example:
 
     validates_acceptance_of :accepted_terms, :message => '^Please accept the terms of service'
 
+The plugin also lets you use procs instead of strings. Example:
+
+    validates_acceptance_of :accepted_terms, :message => Proc.new {|service| "You must accept the terms of the service #{service.name}" }'
 
 Detail
 ------
 
-Redefines methods:
+Redefines method:
  
  ActiveRecord::Errors::full_messages
- ActiveRecord::Errors::on
 
  Returns all the full error messages in an array. 'Base' messages are handled as usual.
  Non-base messages are prefixed with the attribute name as usual UNLESS they begin with '^'
