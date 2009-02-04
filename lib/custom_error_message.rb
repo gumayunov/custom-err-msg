@@ -1,11 +1,18 @@
-module ActiveRecord
-  class Errors
+module CustomErrorMessage
+  def self.included(receiver)
+    receiver.send :include, InstanceMethods
+    receiver.class_eval do
+      alias_method_chain :full_messages, :tilde
+    end
+  end
 
-    # Redefine the ActiveRecord::Errors::full_messages method:
+  module InstanceMethods
+    # Redefine the full_messages method:
     #  Returns all the full error messages in an array. 'Base' messages are handled as usual.
     #  Non-base messages are prefixed with the attribute name as usual UNLESS they begin with '^'
     #  in which case the attribute name is omitted.
     #  E.g. validates_acceptance_of :accepted_terms, :message => '^Please accept the terms of service'
+
     private
     def full_messages_with_tilde
       process_procs
@@ -18,7 +25,6 @@ module ActiveRecord
         end
       end
     end
-    alias_method_chain :full_messages, :tilde
 
     def process_procs
       @errors.each_pair do |field, messages|
