@@ -17,7 +17,7 @@ is begin the message with a '^' character. Example:
 
 The plugin also lets you use procs instead of strings. Example:
 
-    validates_acceptance_of :accepted_terms, :message => Proc.new {|service| "You must accept the terms of the service #{service.name}" }'
+    validates_acceptance_of :accepted_terms, :message => Proc.new {|service| "You must accept the terms of the service #{service.name}" }
 
 Detail
 ------

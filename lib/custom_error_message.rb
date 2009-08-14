@@ -3,6 +3,7 @@ module CustomErrorMessage
     receiver.send :include, InstanceMethods
     receiver.class_eval do
       alias_method_chain :full_messages, :tilde
+      alias_method_chain :add, :procs
     end
   end
 
@@ -15,7 +16,6 @@ module CustomErrorMessage
 
     private
     def full_messages_with_tilde
-      process_procs
       full_messages = full_messages_without_tilde
       full_messages.map do |message|
         if starts_with_humanized_column_followed_by_circumflex? message
@@ -26,18 +26,12 @@ module CustomErrorMessage
       end
     end
 
-    def process_procs
-      @errors.each_pair do |field, messages|
-        only_string_messages = messages.map do |message|
-          if message.respond_to? :to_proc
-            "^#{message.to_proc.call(@base)}"
-          else
-            message
-          end
-        end
-
-        @errors[field] = only_string_messages
+    def add_with_procs(attribute, message = nil, options = {})
+      if options[:default].respond_to? :to_proc
+        options[:default] = "^#{options[:default].to_proc.call(@base)}"
       end
+      
+      add_without_procs(attribute, message, options)
     end
 
     def starts_with_humanized_column_followed_by_circumflex?(message)
