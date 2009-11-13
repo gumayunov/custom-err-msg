@@ -35,7 +35,7 @@ module CustomErrorMessage
     end
 
     def starts_with_humanized_column_followed_by_circumflex?(message)
-      @errors.keys.any?{|column| message.match(/^#{column.to_s.humanize} \^/)}
+      @errors.keys.any?{|column| message.match(/^#{@base.class.human_attribute_name(column)} \^/)}
     end
   end
 end
